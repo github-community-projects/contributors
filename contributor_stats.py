@@ -45,7 +45,6 @@ class ContributorStats:
         sponsor_info: str,
     ):
         """Initialize the contributor_stats object"""
-        new_contributor = False
         self.username = username
         self.new_contributor = new_contributor
         self.avatar_url = avatar_url
