@@ -345,20 +345,21 @@ class TestContributors(unittest.TestCase):
             "",
         )
 
-        with patch.object(
-            contributors_module.env, "get_env_vars"
-        ) as mock_get_env_vars, patch.object(
-            contributors_module.auth, "auth_to_github"
-        ) as mock_auth_to_github, patch.object(
-            contributors_module, "get_all_contributors"
-        ) as mock_get_all_contributors, patch.object(
-            contributors_module.contributor_stats,
-            "is_new_contributor",
-            return_value=True,
-        ) as mock_is_new, patch.object(
-            contributors_module.markdown, "write_to_markdown"
-        ), patch.object(
-            contributors_module.json_writer, "write_to_json"
+        with (
+            patch.object(contributors_module.env, "get_env_vars") as mock_get_env_vars,
+            patch.object(
+                contributors_module.auth, "auth_to_github"
+            ) as mock_auth_to_github,
+            patch.object(
+                contributors_module, "get_all_contributors"
+            ) as mock_get_all_contributors,
+            patch.object(
+                contributors_module.contributor_stats,
+                "is_new_contributor",
+                return_value=True,
+            ) as mock_is_new,
+            patch.object(contributors_module.markdown, "write_to_markdown"),
+            patch.object(contributors_module.json_writer, "write_to_json"),
         ):
             mock_get_env_vars.return_value = (
                 "org",
@@ -403,18 +404,19 @@ class TestContributors(unittest.TestCase):
             "https://github.com/sponsors/user1",
         )
 
-        with patch.object(
-            contributors_module.env, "get_env_vars"
-        ) as mock_get_env_vars, patch.object(
-            contributors_module.auth, "auth_to_github"
-        ) as mock_auth_to_github, patch.object(
-            contributors_module, "get_all_contributors"
-        ) as mock_get_all_contributors, patch.object(
-            contributors_module.contributor_stats, "get_sponsor_information"
-        ) as mock_get_sponsor_information, patch.object(
-            contributors_module.markdown, "write_to_markdown"
-        ), patch.object(
-            contributors_module.json_writer, "write_to_json"
+        with (
+            patch.object(contributors_module.env, "get_env_vars") as mock_get_env_vars,
+            patch.object(
+                contributors_module.auth, "auth_to_github"
+            ) as mock_auth_to_github,
+            patch.object(
+                contributors_module, "get_all_contributors"
+            ) as mock_get_all_contributors,
+            patch.object(
+                contributors_module.contributor_stats, "get_sponsor_information"
+            ) as mock_get_sponsor_information,
+            patch.object(contributors_module.markdown, "write_to_markdown"),
+            patch.object(contributors_module.json_writer, "write_to_json"),
         ):
             mock_get_env_vars.return_value = (
                 "org",

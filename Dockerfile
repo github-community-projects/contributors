@@ -14,9 +14,11 @@ LABEL com.github.actions.name="contributors" \
     org.opencontainers.image.description="GitHub Action that given an organization or repository, produces information about the contributors over the specified time period."
 
 WORKDIR /action/workspace
-COPY requirements.txt *.py /action/workspace/
+COPY pyproject.toml uv.lock *.py /action/workspace/
 
-RUN python3 -m pip install --no-cache-dir --no-deps -r requirements.txt \
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+RUN uv sync --frozen --no-dev --no-editable \
     && apt-get -y update \
     && apt-get -y install --no-install-recommends git=1:2.47.3-0+deb13u1 \
     && rm -rf /var/lib/apt/lists/*
@@ -26,4 +28,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
   CMD python3 -c "import os,sys; sys.exit(0 if os.path.exists('/action/workspace/contributors.py') else 1)"
 
 CMD ["/action/workspace/contributors.py"]
-ENTRYPOINT ["python3", "-u"]
+ENTRYPOINT ["uv", "run"]

@@ -266,11 +266,12 @@ The job summary contains the same markdown content that is written to the config
 ## Local usage without Docker
 
 1. Make sure you have at least Python3.11 installed
+1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/)
 1. Copy `.env-example` to `.env`
 1. Fill out the `.env` file with a _token_ from a user that has access to the organization to scan (listed below). Tokens should have at least read:org access for organization scanning and read:repository for repository scanning.
 1. Fill out the `.env` file with the configuration parameters you want to use
-1. `pip3 install -r requirements.txt`
-1. Run `python3 ./contributors.py`, which will output everything in the terminal
+1. `uv sync`
+1. Run `uv run python3 ./contributors.py`, which will output everything in the terminal
 
 ## License
 
