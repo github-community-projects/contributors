@@ -27,7 +27,7 @@ jobs:
         with:
           enable-cache: true
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --frozen
       - name: Lint Code Base
         uses: super-linter/super-linter@61abc07d755095a68f4987d1c2c3d1d64408f1f9 # v8.5.0
         env:
