@@ -155,41 +155,53 @@ def get_contributors(repo: object, start_date: str, end_date: str, ghe: str):
     Returns:
         contributors (list): A list of ContributorStats objects
     """
-    all_repo_contributors = repo.contributors()
     contributors = []
+    endpoint = ghe if ghe else "https://github.com"
     try:
-        for user in all_repo_contributors:
-            # Ignore contributors with [bot] in their name
-            if "[bot]" in user.login:
-                continue
-
-            # Check if user has commits in the date range
-            if start_date and end_date:
-                user_commits = repo.commits(
-                    author=user.login, since=start_date, until=end_date
-                )
-
-                # If the user has no commits in the date range, skip them
-                try:
-                    next(user_commits)
-                except StopIteration:
+        if start_date and end_date:
+            # Fetch commits in the date range and extract unique authors.
+            # This is much more efficient than iterating all-time contributors
+            # and checking each one for commits, which causes rate limiting
+            # on large repositories.
+            contributor_data = {}
+            for commit in repo.commits(since=start_date, until=end_date):
+                if commit.author is None:
                     continue
+                login = commit.author.login
+                if "[bot]" in login:
+                    continue
+                if login not in contributor_data:
+                    contributor_data[login] = {
+                        "avatar_url": commit.author.avatar_url,
+                        "contribution_count": 0,
+                    }
+                contributor_data[login]["contribution_count"] += 1
 
-            # Store the contributor information in a ContributorStats object
-            endpoint = ghe if ghe else "https://github.com"
-            if start_date and end_date:
-                commit_url = f"{endpoint}/{repo.full_name}/commits?author={user.login}&since={start_date}&until={end_date}"
-            else:
+            for username, data in contributor_data.items():
+                commit_url = f"{endpoint}/{repo.full_name}/commits?author={username}&since={start_date}&until={end_date}"
+                contributor = contributor_stats.ContributorStats(
+                    username,
+                    False,
+                    data["avatar_url"],
+                    data["contribution_count"],
+                    commit_url,
+                    "",
+                )
+                contributors.append(contributor)
+        else:
+            for user in repo.contributors():
+                if "[bot]" in user.login:
+                    continue
                 commit_url = f"{endpoint}/{repo.full_name}/commits?author={user.login}"
-            contributor = contributor_stats.ContributorStats(
-                user.login,
-                False,
-                user.avatar_url,
-                user.contributions_count,
-                commit_url,
-                "",
-            )
-            contributors.append(contributor)
+                contributor = contributor_stats.ContributorStats(
+                    user.login,
+                    False,
+                    user.avatar_url,
+                    user.contributions_count,
+                    commit_url,
+                    "",
+                )
+                contributors.append(contributor)
     except Exception as e:
         print(f"Error getting contributors for repository: {repo.full_name}")
         print(e)

@@ -58,7 +58,7 @@ class TestAuth(unittest.TestCase):
         result = auth.auth_to_github(
             "", "123", "123", b"123", "https://github.example.com", True
         )
-        mock.login_as_app_installation.assert_called_once()
+        mock.login_as_app_installation.assert_called_once_with(b"123", "123", "123")
         self.assertEqual(result, mock)
 
     @patch("github3.github.GitHub")
@@ -71,7 +71,21 @@ class TestAuth(unittest.TestCase):
         result = auth.auth_to_github(
             "", "123", "123", b"123", "https://github.example.com", False
         )
-        mock.login_as_app_installation.assert_called_once()
+        mock.login_as_app_installation.assert_called_once_with(b"123", "123", "123")
+        self.assertEqual(result, mock)
+
+    @patch("github3.github.GitHub")
+    def test_auth_to_github_with_app_int_app_id(self, mock_gh):
+        """
+        Test that an integer app_id is converted to a string before passing
+        to login_as_app_installation, to avoid PyJWT TypeError on the iss claim.
+        """
+        mock = mock_gh.return_value
+        mock.login_as_app_installation = MagicMock(return_value=True)
+        result = auth.auth_to_github("", 123, 456, b"private_key", "", False)
+        mock.login_as_app_installation.assert_called_once_with(
+            b"private_key", "123", 456
+        )
         self.assertEqual(result, mock)
 
     @patch("github3.apps.create_jwt_headers", MagicMock(return_value="gh_token"))

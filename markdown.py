@@ -230,7 +230,10 @@ def get_contributor_table(
     sponsor_info = _is_truthy(sponsor_info)
     show_avatar = _is_truthy(show_avatar)
     link_to_profile = _is_truthy(link_to_profile)
-    columns = ["Username", "All Time Contribution Count"]
+    if start_date and end_date:
+        columns = ["Username", "Contribution Count"]
+    else:
+        columns = ["Username", "All Time Contribution Count"]
     if show_avatar:
         columns.insert(0, "Avatar")
     if start_date and end_date:
