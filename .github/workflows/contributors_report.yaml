@@ -35,7 +35,7 @@ jobs:
           echo "END_DATE=$end_date" >> "$GITHUB_ENV"
 
       - name: Run contributor action
-        uses: github-community-projects/contributors@0d5adc3833e89ee1f4145744f5d69313cf5ea238
+        uses: github-community-projects/contributors@08ba1193dde975b1e1e5b0a4de4d4576be865c5c
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           START_DATE: ${{ env.START_DATE }}
