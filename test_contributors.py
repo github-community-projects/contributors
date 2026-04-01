@@ -419,7 +419,7 @@ class TestContributors(unittest.TestCase):
                 "",
                 "",
                 "",
-                "true",
+                True,
                 False,
                 "contributors.md",
                 False,

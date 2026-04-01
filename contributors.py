@@ -69,7 +69,7 @@ def main():
             )
 
     # Get sponsor information on the contributor
-    if sponsor_info == "true":
+    if sponsor_info:
         contributors = contributor_stats.get_sponsor_information(
             contributors, token, ghe
         )
