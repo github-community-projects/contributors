@@ -56,10 +56,10 @@ Find out more in the [GitHub API documentation](https://docs.github.com/en/rest/
    - `END_DATE`
 
    If no **start and end date** are supplied, the action will consider the entire repository history and be unable to determine if contributors are new or returning.
-   If running on a whole **organization** then no repository is needed.  
+   If running on a whole **organization** then no repository is needed.
    If running the action on just **one repository** or a **list of repositories**, then no organization is needed.
 
-1. Also edit the value for `GH_ENTERPRISE_URL` if you are using a GitHub Server and not using github.com.  
+1. Also edit the value for `GH_ENTERPRISE_URL` if you are using a GitHub Server and not using github.com.
    For github.com users, leave it empty.
 1. If you are running this action on an organization or repository other than the one where the workflow file is going to be, then update the value of `GH_TOKEN`.
    - Do this by creating a [GitHub API token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) with permissions to read the repository/organization and write issues.
@@ -223,6 +223,17 @@ jobs:
           content-filepath: ./${{ env.OUTPUT_FILENAME }}
           assignees: <YOUR_GITHUB_HANDLE_HERE>
 ```
+
+#### Posting the report as a GitHub Discussion
+
+A common pattern is piping the generated `contributors.md` into [`abirismyname/create-discussion`](https://github.com/abirismyname/create-discussion) to publish a "thank you" discussion. Two things to know:
+
+1. The job needs `discussions: write` in its `permissions:` block.
+2. **`GITHUB_TOKEN` only works when the discussion is created in the same repository the workflow runs in.** If `repository-id` points at a different repository, the GraphQL call returns `Resource not accessible by integration` regardless of the declared permissions. To post a discussion in another repository, use one of:
+   - A Personal Access Token (classic) with `repo` and `write:discussion` scopes, or a fine-grained PAT with `Discussions: read & write` on the target repo, stored as a repository secret (e.g. `DISCUSSION_TOKEN`).
+   - A GitHub App installed on the target repository, exchanging credentials with [`actions/create-github-app-token`](https://github.com/actions/create-github-app-token) and granting the app `Discussions: read & write`.
+
+   Then pass that token as `GH_TOKEN` to the `create-discussion` step instead of `secrets.GITHUB_TOKEN`.
 
 ## Example Markdown output with `start_date` and `end_date` supplied
 

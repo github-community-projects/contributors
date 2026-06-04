@@ -230,6 +230,28 @@ class TestContributorStats(unittest.TestCase):
         )
 
     @patch("requests.post")
+    def test_fetch_sponsor_info_skips_when_repository_owner_is_none(self, mock_post):
+        """Skip users whose repositoryOwner is null (orgs, deleted users, bots)."""
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"data": {"repositoryOwner": None}}
+        mock_post.return_value = mock_response
+
+        contributors = [
+            ContributorStats(
+                username="some-org",
+                avatar_url="https://avatars.githubusercontent.com/u/",
+                contribution_count=10,
+                commit_url="url",
+                sponsor_info="",
+            ),
+        ]
+
+        result = get_sponsor_information(contributors, token="token", ghe="")
+
+        self.assertEqual(result[0].sponsor_info, "")
+
+    @patch("requests.post")
     def test_fetch_sponsor_info_raises_on_error(self, mock_post):
         """Test get_sponsor_information raises when the API response is invalid."""
         mock_response = MagicMock()

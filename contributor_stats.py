@@ -166,11 +166,15 @@ def get_sponsor_information(contributors: list, token: str, ghe: str) -> list:
         if response.status_code != 200 or "errors" in response.json():
             raise ValueError("GraphQL query failed")
 
-        data = response.json()["data"]
+        data = response.json().get("data") or {}
+        owner = data.get("repositoryOwner")
+        # repositoryOwner is null for Organizations, deleted/renamed users,
+        # and other non-User logins because of the `... on User` fragment.
+        if not owner:
+            continue
 
         endpoint = ghe if ghe else "https://github.com"
-        # if the user has a sponsor page, add it to the contributor object
-        if data["repositoryOwner"]["hasSponsorsListing"]:
+        if owner.get("hasSponsorsListing"):
             contributor.sponsor_info = f"{endpoint}/sponsors/{contributor.username}"
 
     return contributors

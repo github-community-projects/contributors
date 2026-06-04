@@ -163,39 +163,39 @@ def get_contributors(repo: object, start_date: str, end_date: str, ghe: str):
             # This is much more efficient than iterating all-time contributors
             # and checking each one for commits, which causes rate limiting
             # on large repositories.
-            contributor_data = {}
+            avatars: dict[str, str] = {}
+            counts: dict[str, int] = {}
             for commit in repo.commits(since=start_date, until=end_date):
-                if commit.author is None:
+                # github3.py leaves commit.author as a raw dict (not a ShortUser)
+                # when the API returns an author payload without a matching GitHub user.
+                login = getattr(commit.author, "login", None)
+                if not login or "[bot]" in login:
                     continue
-                login = commit.author.login
-                if "[bot]" in login:
-                    continue
-                if login not in contributor_data:
-                    contributor_data[login] = {
-                        "avatar_url": commit.author.avatar_url,
-                        "contribution_count": 0,
-                    }
-                contributor_data[login]["contribution_count"] += 1
+                if login not in counts:
+                    avatars[login] = getattr(commit.author, "avatar_url", "") or ""
+                    counts[login] = 0
+                counts[login] += 1
 
-            for username, data in contributor_data.items():
+            for username, count in counts.items():
                 commit_url = f"{endpoint}/{repo.full_name}/commits?author={username}&since={start_date}&until={end_date}"
                 contributor = contributor_stats.ContributorStats(
                     username,
-                    data["avatar_url"],
-                    data["contribution_count"],
+                    avatars[username],
+                    count,
                     commit_url,
                     "",
                 )
                 contributors.append(contributor)
         else:
             for user in repo.contributors():
-                if "[bot]" in user.login:
+                login = getattr(user, "login", None)
+                if not login or "[bot]" in login:
                     continue
-                commit_url = f"{endpoint}/{repo.full_name}/commits?author={user.login}"
+                commit_url = f"{endpoint}/{repo.full_name}/commits?author={login}"
                 contributor = contributor_stats.ContributorStats(
-                    user.login,
-                    user.avatar_url,
-                    user.contributions_count,
+                    login,
+                    getattr(user, "avatar_url", "") or "",
+                    getattr(user, "contributions_count", 0) or 0,
                     commit_url,
                     "",
                 )

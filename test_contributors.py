@@ -229,6 +229,38 @@ class TestContributors(unittest.TestCase):
 
         self.assertEqual(result, [])
 
+    def test_get_contributors_skips_dict_author(self):
+        """Skip commits where github3.py left author as a raw dict instead of a ShortUser."""
+        mock_repo = MagicMock()
+        mock_repo.full_name = "owner/repo"
+        mock_commit = MagicMock()
+        mock_commit.author = {"name": "Detached Author", "email": "x@example.com"}
+        mock_repo.commits.return_value = iter([mock_commit])
+
+        with patch("builtins.print") as mock_print:
+            result = contributors_module.get_contributors(
+                mock_repo, "2022-01-01", "2022-12-31", ""
+            )
+
+        self.assertEqual(result, [])
+        mock_print.assert_not_called()
+
+    def test_get_contributors_no_commit_end_date_skips_user_without_login(self):
+        """Skip users from repo.contributors() that lack a usable login attribute."""
+        mock_repo = MagicMock()
+        mock_repo.full_name = "owner/repo"
+        bad_user = {"name": "anon"}
+        good_user = MagicMock()
+        good_user.login = "real"
+        good_user.avatar_url = "https://avatars.githubusercontent.com/u/1"
+        good_user.contributions_count = 5
+        mock_repo.contributors.return_value = [bad_user, good_user]
+
+        result = contributors_module.get_contributors(mock_repo, "", "", "")
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0].username, "real")
+
     def test_get_contributors_aggregates_multiple_commits(self):
         """Test get_contributors counts multiple commits per author correctly."""
         mock_repo = MagicMock()
