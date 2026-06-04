@@ -256,10 +256,12 @@ class TestContributors(unittest.TestCase):
         good_user.contributions_count = 5
         mock_repo.contributors.return_value = [bad_user, good_user]
 
-        result = contributors_module.get_contributors(mock_repo, "", "", "")
+        with patch("builtins.print") as mock_print:
+            result = contributors_module.get_contributors(mock_repo, "", "", "")
 
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0].username, "real")
+        mock_print.assert_not_called()
 
     def test_get_contributors_aggregates_multiple_commits(self):
         """Test get_contributors counts multiple commits per author correctly."""
