@@ -203,6 +203,24 @@ class TestContributors(unittest.TestCase):
             "",
         )
 
+    @patch("contributors.contributor_stats.ContributorStats")
+    def test_get_contributors_no_end_date_skips_bot(self, mock_contributor_stats):
+        """Test get_contributors skips bot users when using the repo.contributors() path."""
+        mock_repo = MagicMock()
+        mock_bot = MagicMock()
+        mock_bot.login = "dependabot[bot]"
+        mock_bot.avatar_url = "https://avatars.githubusercontent.com/u/0?v=4"
+        mock_bot.contributions_count = 50
+
+        mock_repo.contributors.return_value = [mock_bot]
+        mock_repo.full_name = "owner/repo"
+        ghe = ""
+
+        result = contributors_module.get_contributors(mock_repo, "2022-01-01", "", ghe)
+
+        self.assertEqual(result, [])
+        mock_contributor_stats.assert_not_called()
+
     def test_get_contributors_skips_when_no_commits_in_range(self):
         """Test get_contributors returns empty list when no commits in the date range."""
         mock_repo = MagicMock()
