@@ -4,6 +4,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 import auth
+import requests
 from github import GithubException
 
 
@@ -173,6 +174,31 @@ class TestAuth(unittest.TestCase):
 
         result = auth.get_github_app_installation_token(
             ghe="https://api.github.com",
+            gh_app_id="12345",
+            gh_app_private_key_bytes=b"private_key",
+            gh_app_installation_id="678910",
+        )
+
+        self.assertIsNone(result)
+
+    @patch("auth.Auth")
+    @patch("auth.GithubIntegration")
+    def test_get_github_app_installation_token_network_failure(
+        self, mock_integration_cls, mock_auth_cls
+    ):
+        """
+        Test the get_github_app_installation_token function returns None on network errors.
+        """
+        mock_app_auth = MagicMock()
+        mock_auth_cls.AppAuth.return_value = mock_app_auth
+        mock_integration = MagicMock()
+        mock_integration_cls.return_value = mock_integration
+        mock_integration.get_access_token.side_effect = (
+            requests.exceptions.ConnectionError("Network unreachable")
+        )
+
+        result = auth.get_github_app_installation_token(
+            ghe="",
             gh_app_id="12345",
             gh_app_private_key_bytes=b"private_key",
             gh_app_installation_id="678910",

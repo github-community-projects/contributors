@@ -1,5 +1,6 @@
 """This is the module that contains functions related to authenticating to GitHub with a personal access token."""
 
+import requests
 from github import Auth, Github, GithubException, GithubIntegration
 
 
@@ -70,7 +71,7 @@ def get_github_app_installation_token(
         gi = GithubIntegration(auth=app_auth)
     try:
         installation_token = gi.get_access_token(int(gh_app_installation_id))
-    except GithubException as e:
+    except (GithubException, requests.exceptions.RequestException) as e:
         print(f"Request to get GitHub App Installation Token failed: {e}")
         return None
     return installation_token.token
