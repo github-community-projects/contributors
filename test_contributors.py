@@ -2,6 +2,7 @@
 
 import runpy
 import unittest
+from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 import contributors as contributors_module
@@ -25,15 +26,15 @@ class TestContributors(unittest.TestCase):
             "https://avatars.githubusercontent.com/u/12345678?v=4"
         )
         mock_repo.full_name = "owner/repo"
-        mock_repo.commits.return_value = iter([mock_commit])
+        mock_repo.get_commits.return_value = iter([mock_commit])
 
         result = contributors_module.get_contributors(
             mock_repo, "2022-01-01", "2022-12-31", ""
         )
 
         self.assertEqual(len(result), 1)
-        mock_repo.commits.assert_called_once_with(
-            since="2022-01-01", until="2022-12-31"
+        mock_repo.get_commits.assert_called_once_with(
+            since=datetime(2022, 1, 1), until=datetime(2022, 12, 31)
         )
         mock_contributor_stats.assert_called_once_with(
             "user",
@@ -49,7 +50,7 @@ class TestContributors(unittest.TestCase):
         Test the get_all_contributors function when an organization is provided.
         """
         mock_github_connection = MagicMock()
-        mock_github_connection.organization().repositories.return_value = [
+        mock_github_connection.get_organization().get_repos.return_value = [
             "repo1",
             "repo2",
         ]
@@ -89,7 +90,7 @@ class TestContributors(unittest.TestCase):
         Test the get_all_contributors function when a repository is provided.
         """
         mock_github_connection = MagicMock()
-        mock_github_connection.repository.return_value = "repo"
+        mock_github_connection.get_repo.return_value = "repo"
         mock_get_contributors.return_value = [
             ContributorStats(
                 "user",
@@ -134,7 +135,7 @@ class TestContributors(unittest.TestCase):
         )
 
         mock_repo.full_name = "owner/repo"
-        mock_repo.commits.return_value = iter([mock_commit])
+        mock_repo.get_commits.return_value = iter([mock_commit])
         ghe = ""
 
         result = contributors_module.get_contributors(
@@ -142,8 +143,8 @@ class TestContributors(unittest.TestCase):
         )
 
         self.assertEqual(len(result), 1)
-        mock_repo.commits.assert_called_once_with(
-            since="2022-01-01", until="2022-12-31"
+        mock_repo.get_commits.assert_called_once_with(
+            since=datetime(2022, 1, 1), until=datetime(2022, 12, 31)
         )
         mock_contributor_stats.assert_called_once_with(
             "user",
@@ -166,7 +167,7 @@ class TestContributors(unittest.TestCase):
         )
 
         mock_repo.full_name = "owner/repo"
-        mock_repo.commits.return_value = iter([mock_commit])
+        mock_repo.get_commits.return_value = iter([mock_commit])
         ghe = ""
 
         result = contributors_module.get_contributors(
@@ -186,15 +187,15 @@ class TestContributors(unittest.TestCase):
         mock_user = MagicMock()
         mock_user.login = "user"
         mock_user.avatar_url = "https://avatars.githubusercontent.com/u/12345678?v=4"
-        mock_user.contributions_count = 100
+        mock_user.contributions = 100
 
-        mock_repo.contributors.return_value = [mock_user]
+        mock_repo.get_contributors.return_value = [mock_user]
         mock_repo.full_name = "owner/repo"
         ghe = ""
 
         contributors_module.get_contributors(mock_repo, "2022-01-01", "", ghe)
 
-        mock_repo.commits.assert_not_called()
+        mock_repo.get_commits.assert_not_called()
         mock_contributor_stats.assert_called_once_with(
             "user",
             "https://avatars.githubusercontent.com/u/12345678?v=4",
@@ -210,9 +211,9 @@ class TestContributors(unittest.TestCase):
         mock_bot = MagicMock()
         mock_bot.login = "dependabot[bot]"
         mock_bot.avatar_url = "https://avatars.githubusercontent.com/u/0?v=4"
-        mock_bot.contributions_count = 50
+        mock_bot.contributions = 50
 
-        mock_repo.contributors.return_value = [mock_bot]
+        mock_repo.get_contributors.return_value = [mock_bot]
         mock_repo.full_name = "owner/repo"
         ghe = ""
 
@@ -225,7 +226,7 @@ class TestContributors(unittest.TestCase):
         """Test get_contributors returns empty list when no commits in the date range."""
         mock_repo = MagicMock()
         mock_repo.full_name = "owner/repo"
-        mock_repo.commits.return_value = iter([])
+        mock_repo.get_commits.return_value = iter([])
 
         result = contributors_module.get_contributors(
             mock_repo, "2022-01-01", "2022-12-31", ""
@@ -239,7 +240,7 @@ class TestContributors(unittest.TestCase):
         mock_repo.full_name = "owner/repo"
         mock_commit = MagicMock()
         mock_commit.author = None
-        mock_repo.commits.return_value = iter([mock_commit])
+        mock_repo.get_commits.return_value = iter([mock_commit])
 
         result = contributors_module.get_contributors(
             mock_repo, "2022-01-01", "2022-12-31", ""
@@ -248,12 +249,12 @@ class TestContributors(unittest.TestCase):
         self.assertEqual(result, [])
 
     def test_get_contributors_skips_dict_author(self):
-        """Skip commits where github3.py left author as a raw dict instead of a ShortUser."""
+        """Skip commits where the API returns an author payload without a matching GitHub user."""
         mock_repo = MagicMock()
         mock_repo.full_name = "owner/repo"
         mock_commit = MagicMock()
         mock_commit.author = {"name": "Detached Author", "email": "x@example.com"}
-        mock_repo.commits.return_value = iter([mock_commit])
+        mock_repo.get_commits.return_value = iter([mock_commit])
 
         with patch("builtins.print") as mock_print:
             result = contributors_module.get_contributors(
@@ -271,8 +272,8 @@ class TestContributors(unittest.TestCase):
         good_user = MagicMock()
         good_user.login = "real"
         good_user.avatar_url = "https://avatars.githubusercontent.com/u/1"
-        good_user.contributions_count = 5
-        mock_repo.contributors.return_value = [bad_user, good_user]
+        good_user.contributions = 5
+        mock_repo.get_contributors.return_value = [bad_user, good_user]
 
         with patch("builtins.print") as mock_print:
             result = contributors_module.get_contributors(mock_repo, "", "", "")
@@ -291,7 +292,7 @@ class TestContributors(unittest.TestCase):
         mock_commit2 = MagicMock()
         mock_commit2.author.login = "user"
         mock_commit2.author.avatar_url = "https://avatars.githubusercontent.com/u/1"
-        mock_repo.commits.return_value = iter([mock_commit1, mock_commit2])
+        mock_repo.get_commits.return_value = iter([mock_commit1, mock_commit2])
 
         result = contributors_module.get_contributors(
             mock_repo, "2022-01-01", "2022-12-31", ""
@@ -311,7 +312,7 @@ class TestContributors(unittest.TestCase):
 
         mock_repo = MagicMock()
         mock_repo.full_name = "owner/repo"
-        mock_repo.commits.return_value = BoomIterable()
+        mock_repo.get_commits.return_value = BoomIterable()
 
         with patch("builtins.print") as mock_print:
             result = contributors_module.get_contributors(
@@ -351,8 +352,8 @@ class TestContributors(unittest.TestCase):
         mock_auth = MagicMock()
         mock_github = MagicMock()
         mock_org = MagicMock()
-        mock_org.repositories.return_value = []
-        mock_github.organization.return_value = mock_org
+        mock_org.get_repos.return_value = []
+        mock_github.get_organization.return_value = mock_org
         mock_auth.auth_to_github.return_value = mock_github
         mock_auth.get_github_app_installation_token.return_value = "token"
 

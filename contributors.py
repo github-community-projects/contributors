@@ -1,6 +1,7 @@
 # pylint: disable=broad-exception-caught
 """This file contains the main() and other functions needed to get contributor information from the organization or repository"""
 
+from datetime import datetime
 from typing import List
 
 import auth
@@ -122,12 +123,11 @@ def get_all_contributors(
     """
     repos = []
     if organization:
-        repos = github_connection.organization(organization).repositories()
+        repos = github_connection.get_organization(organization).get_repos()
     else:
         repos = []
         for repo in repository_list:
-            owner, repo_name = repo.split("/")
-            repository_obj = github_connection.repository(owner, repo_name)
+            repository_obj = github_connection.get_repo(repo)
             repos.append(repository_obj)
 
     all_contributors = []
@@ -165,9 +165,10 @@ def get_contributors(repo: object, start_date: str, end_date: str, ghe: str):
             # on large repositories.
             avatars: dict[str, str] = {}
             counts: dict[str, int] = {}
-            for commit in repo.commits(since=start_date, until=end_date):
-                # github3.py leaves commit.author as a raw dict (not a ShortUser)
-                # when the API returns an author payload without a matching GitHub user.
+            for commit in repo.get_commits(
+                since=datetime.fromisoformat(start_date),
+                until=datetime.fromisoformat(end_date),
+            ):
                 login = getattr(commit.author, "login", None)
                 if not login or "[bot]" in login:
                     continue
@@ -187,7 +188,7 @@ def get_contributors(repo: object, start_date: str, end_date: str, ghe: str):
                 )
                 contributors.append(contributor)
         else:
-            for user in repo.contributors():
+            for user in repo.get_contributors():
                 login = getattr(user, "login", None)
                 if not login or "[bot]" in login:
                     continue
@@ -195,7 +196,7 @@ def get_contributors(repo: object, start_date: str, end_date: str, ghe: str):
                 contributor = contributor_stats.ContributorStats(
                     login,
                     getattr(user, "avatar_url", "") or "",
-                    getattr(user, "contributions_count", 0) or 0,
+                    getattr(user, "contributions", 0) or 0,
                     commit_url,
                     "",
                 )

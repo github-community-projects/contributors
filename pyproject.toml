@@ -4,7 +4,7 @@ version = "2.0.0"
 description = "GitHub Action that produces information about contributors over a specified time period."
 requires-python = ">=3.11"
 dependencies = [
-    "github3-py==4.0.1",
+    "PyGithub==2.9.1",
     "python-dotenv==1.2.2",
     "requests==2.34.2",
 ]
