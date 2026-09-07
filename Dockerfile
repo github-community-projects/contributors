@@ -1,7 +1,7 @@
 #checkov:skip=CKV_DOCKER_2
 #checkov:skip=CKV_DOCKER_3
 #trivy:ignore:AVD-DS-0002
-FROM python:3.14.7-slim@sha256:cae66f2ef0ec51a9891263eeee7f987dacf0a9879e8aa9353d5606e0530619a5
+FROM python:3.14.7-slim@sha256:cad9a2c871761c413caa6fdd6441c783451e740a48aaeba60ae62a8b53525ef6
 LABEL com.github.actions.name="contributors" \
     com.github.actions.description="GitHub Action that given an organization or repository, produces information about the contributors over the specified time period." \
     com.github.actions.icon="users" \
