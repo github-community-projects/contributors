@@ -1,8 +1,7 @@
 # pylint: disable=broad-exception-caught
 """This file contains the main() and other functions needed to get contributor information from the organization or repository"""
 
-from datetime import datetime
-from typing import List
+from datetime import datetime, timezone
 
 import auth
 import contributor_stats
@@ -102,7 +101,7 @@ def main():
 
 def get_all_contributors(
     organization: str,
-    repository_list: List[str],
+    repository_list: list[str],
     start_date: str,
     end_date: str,
     github_connection: object,
@@ -166,8 +165,8 @@ def get_contributors(repo: object, start_date: str, end_date: str, ghe: str):
             avatars: dict[str, str] = {}
             counts: dict[str, int] = {}
             for commit in repo.get_commits(
-                since=datetime.fromisoformat(start_date),
-                until=datetime.fromisoformat(end_date),
+                since=datetime.fromisoformat(start_date).replace(tzinfo=timezone.utc),
+                until=datetime.fromisoformat(end_date).replace(tzinfo=timezone.utc),
             ):
                 login = getattr(commit.author, "login", None)
                 if not login or "[bot]" in login:
@@ -201,7 +200,7 @@ def get_contributors(repo: object, start_date: str, end_date: str, ghe: str):
                     "",
                 )
                 contributors.append(contributor)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"Error getting contributors for repository: {repo.full_name}")
         print(e)
         return None

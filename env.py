@@ -63,7 +63,9 @@ def validate_date_format(env_var_name: str) -> str:
 
     pattern = "%Y-%m-%d"
     try:
-        datetime.datetime.strptime(date_to_validate, pattern)
+        datetime.datetime.strptime(date_to_validate, pattern).replace(
+            tzinfo=datetime.timezone.utc
+        )
     except ValueError as exc:
         raise ValueError(
             f"{env_var_name} environment variable not in the format YYYY-MM-DD"
@@ -88,8 +90,16 @@ def validate_date_range(start_date: str, end_date: str) -> None:
 
     pattern = "%Y-%m-%d"
     try:
-        start = datetime.datetime.strptime(start_date, pattern).date()
-        end = datetime.datetime.strptime(end_date, pattern).date()
+        start = (
+            datetime.datetime.strptime(start_date, pattern)
+            .replace(tzinfo=datetime.timezone.utc)
+            .date()
+        )
+        end = (
+            datetime.datetime.strptime(end_date, pattern)
+            .replace(tzinfo=datetime.timezone.utc)
+            .date()
+        )
     except ValueError as exc:
         raise ValueError(
             "start_date and end_date must be in the format YYYY-MM-DD"
