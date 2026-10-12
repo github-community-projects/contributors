@@ -187,12 +187,10 @@ def get_summary_table(collaborators, start_date, end_date, total_contributions):
             )
         else:
             new_contributors_percentage = 0
-        summary_table += f"| {str(len(collaborators))} | {str(total_contributions)} | {str(new_contributors_percentage)}% |\n\n"
+        summary_table += f"| {len(collaborators)!s} | {total_contributions!s} | {new_contributors_percentage!s}% |\n\n"
     else:
         summary_table = "| Total Contributors | Total Contributions |\n| --- | --- |\n"
-        summary_table += (
-            f"| {str(len(collaborators))}  | {str(total_contributions)}  |\n\n"
-        )
+        summary_table += f"| {len(collaborators)!s}  | {total_contributions!s}  |\n\n"
 
     return summary_table
 
