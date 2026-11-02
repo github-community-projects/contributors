@@ -1,7 +1,18 @@
 #checkov:skip=CKV_DOCKER_2
 #checkov:skip=CKV_DOCKER_3
 #trivy:ignore:AVD-DS-0002
-FROM python:3.14.8-slim@sha256:a2b82f3c48559aa0a8446d9af49826b6e2b2016f4cd2afabfe6013ec53729170
+FROM python:3.15.0-slim@sha256:f5b92f2a669a4c347044f29367f31983280b648250ca94dea66f98c53bc87e58 AS builder
+
+WORKDIR /action/workspace
+COPY pyproject.toml uv.lock *.py /action/workspace/
+COPY --from=ghcr.io/astral-sh/uv:0.10.9@sha256:10902f58a1606787602f303954cea099626a4adb02acbac4c69920fe9d278f82 /uv /uvx /bin/
+
+RUN apt-get -y update \
+    && apt-get -y install --no-install-recommends gcc=4:14.2.0-1 libc6-dev=2.41-12+deb13u4 libffi-dev=3.4.8-2 \
+    && uv sync --frozen --no-dev --no-editable \
+    && rm -rf /var/lib/apt/lists/*
+
+FROM python:3.15.0-slim@sha256:f5b92f2a669a4c347044f29367f31983280b648250ca94dea66f98c53bc87e58
 LABEL com.github.actions.name="contributors" \
     com.github.actions.description="GitHub Action that given an organization or repository, produces information about the contributors over the specified time period." \
     com.github.actions.icon="users" \
@@ -17,9 +28,9 @@ WORKDIR /action/workspace
 COPY pyproject.toml uv.lock *.py /action/workspace/
 
 COPY --from=ghcr.io/astral-sh/uv:0.10.9@sha256:10902f58a1606787602f303954cea099626a4adb02acbac4c69920fe9d278f82 /uv /uvx /bin/
+COPY --from=builder /action/workspace/.venv /action/workspace/.venv
 
-RUN uv sync --frozen --no-dev --no-editable \
-    && apt-get -y update \
+RUN apt-get -y update \
     && apt-get -y install --no-install-recommends git=1:2.47.3-0+deb13u1 \
     && rm -rf /var/lib/apt/lists/*
 
