@@ -2,7 +2,7 @@
 """This module contains the functions needed to write the output to markdown files."""
 
 import os
-from operator import itemgetter
+from operator import attrgetter
 
 
 def _is_truthy(value) -> bool:
@@ -85,7 +85,13 @@ def write_to_markdown(
 
     # Generate the markdown content once
     content = generate_markdown_content(
-        start_date, end_date, organization, repository, table, summary_table, skip_summary
+        start_date,
+        end_date,
+        organization,
+        repository,
+        table,
+        summary_table,
+        skip_summary,
     )
 
     # Write the markdown file
@@ -267,8 +273,10 @@ def get_contributor_table(
     total_contributions = 0
 
     # Sort the list by chosen column and order
-    is_reverse = sort_order == 'desc'
-    sorted_collaborators = sorted(collaborators,  key=itemgetter(sort_column), reverse=is_reverse)
+    is_reverse = sort_order == "desc"
+    sorted_collaborators = sorted(
+        collaborators, key=attrgetter(sort_column), reverse=is_reverse
+    )
 
     for collaborator in sorted_collaborators:
         total_contributions += collaborator.contribution_count

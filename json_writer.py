@@ -27,6 +27,8 @@ def write_to_json(
         repository_list (list): A list of repositories for which the contributors are being listed.
         sponsor_info (str): A string indicating whether sponsor information should be included.
         link_to_profile (str): A string indicating whether a link to the contributor's profile should be included.
+        sort_column (str): the column to sort the table with ('username', 'contribution_count' or 'new_contributor').
+        sort_order (str): the order to sort the column with (`asc` or `desc`).
 
     Returns:
         None
@@ -47,6 +49,8 @@ def write_to_json(
     #     ],
     #     "sponsor_info": false,
     #     "link_to_profile": false,
+    #     "sort_column": "contribution_count"
+    #     "sort_order": "desc"
     #     "contributors": [
     #         {
     #             "username": "zkoppert",
@@ -68,8 +72,8 @@ def write_to_json(
     # }
 
     # Sort the list by chosen column and order
-    is_reverse = sort_order == 'desc'
-    contributors.sort(key=attrgetter(sort_column), reverse=is_reverse)
+    is_reverse = sort_order == "desc"
+    contributors = sorted(contributors, key=attrgetter(sort_column), reverse=is_reverse)
 
     data = {
         "start_date": start_date,
@@ -78,6 +82,8 @@ def write_to_json(
         "repository_list": repository_list,
         "sponsor_info": sponsor_info,
         "link_to_profile": link_to_profile,
+        "sort_column": sort_column,
+        "sort_order": sort_order,
         "contributors": [contributor.__dict__ for contributor in contributors],
     }
 

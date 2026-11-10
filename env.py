@@ -133,9 +133,11 @@ def validate_output_filename(output_filename: str) -> str:
     return filename
 
 
-def validate_allowed_values(env_var_name: str, allowed_values: List[str], default: str) -> str:
+def validate_allowed_values(
+    env_var_name: str, allowed_values: List[str], default: str
+) -> str:
     """Check that env variable is contained in a list of defined values or set a default one.
-       Returns a lowercase value.
+    Returns a lowercase value.
     """
     allowed_values = [val.strip().lower() for val in allowed_values]
     var_to_validate = os.getenv(env_var_name, default).strip().lower()
@@ -163,7 +165,7 @@ def get_env_vars(
     bool,
     str,
     str,
-    str,
+    bool,
 ]:
     """
     Get the environment variables for use in the action.
@@ -240,8 +242,12 @@ def get_env_vars(
             repository.strip() for repository in repositories_str.split(",")
         ]
 
-    sort_column = validate_allowed_values('SORT_COLUMN', ['username', 'contribution_count', 'new_contributor'], 'contribution_count')
-    sort_order = validate_allowed_values('SORT_ORDER', ['asc', 'desc'], 'desc')
+    sort_column = validate_allowed_values(
+        "SORT_COLUMN",
+        ["username", "contribution_count", "new_contributor"],
+        "contribution_count",
+    )
+    sort_order = validate_allowed_values("SORT_ORDER", ["asc", "desc"], "desc")
     skip_summary = get_bool_env_var("SKIP_SUMMARY", False)
 
     return (
