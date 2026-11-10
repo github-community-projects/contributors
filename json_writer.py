@@ -1,6 +1,7 @@
 """This module contains a function that writes data to a JSON file."""
 
 import json
+from operator import attrgetter
 
 
 def write_to_json(
@@ -12,6 +13,8 @@ def write_to_json(
     repository_list,
     sponsor_info,
     link_to_profile,
+    sort_column,
+    sort_order,
 ):
     """Write data to a JSON file.
 
@@ -63,6 +66,11 @@ def write_to_json(
     #         }
     #     ]
     # }
+
+    # Sort the list by chosen column and order
+    is_reverse = sort_order == 'desc'
+    contributors.sort(key=attrgetter(sort_column), reverse=is_reverse)
+
     data = {
         "start_date": start_date,
         "end_date": end_date,
