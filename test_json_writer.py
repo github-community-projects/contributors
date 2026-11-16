@@ -21,6 +21,8 @@ class TestWriteToJson(unittest.TestCase):
             "repository_list": ["repo1", "repo2"],
             "sponsor_info": False,
             "link_to_profile": False,
+            "sort_column": "contribution_count",
+            "sort_order": "desc",
             "contributors": [
                 {
                     "username": "test_user",
@@ -54,6 +56,8 @@ class TestWriteToJson(unittest.TestCase):
             repository_list=self.data["repository_list"],
             sponsor_info=self.data["sponsor_info"],
             link_to_profile=self.data["link_to_profile"],
+            sort_column=self.data["sort_column"],
+            sort_order=self.data["sort_order"],
         )
         with open(self.filename, "r", encoding="utf-8") as f:
             result = json.load(f)

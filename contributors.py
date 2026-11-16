@@ -29,6 +29,9 @@ def main():
         link_to_profile,
         output_filename,
         show_avatar,
+        sort_column,
+        sort_order,
+        skip_summary,
     ) = env.get_env_vars()
 
     # Auth to GitHub.com
@@ -86,6 +89,9 @@ def main():
         link_to_profile,
         ghe,
         show_avatar,
+        sort_column,
+        sort_order,
+        skip_summary,
     )
     json_writer.write_to_json(
         filename="contributors.json",
@@ -96,6 +102,8 @@ def main():
         sponsor_info=sponsor_info,
         link_to_profile=link_to_profile,
         contributors=contributors,
+        sort_column=sort_column,
+        sort_order=sort_order,
     )
 
 
