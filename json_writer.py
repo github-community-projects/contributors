@@ -49,8 +49,8 @@ def write_to_json(
     #     ],
     #     "sponsor_info": false,
     #     "link_to_profile": false,
-    #     "sort_column": "contribution_count"
-    #     "sort_order": "desc"
+    #     "sort_column": "contribution_count",
+    #     "sort_order": "desc",
     #     "contributors": [
     #         {
     #             "username": "zkoppert",
