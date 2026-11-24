@@ -21,10 +21,10 @@ def write_to_markdown(
     sponsor_info,
     link_to_profile,
     ghe,
-    sort_column,
-    sort_order,
-    skip_summary,
     show_avatar=False,
+    sort_column="contribution_count",
+    sort_order="desc",
+    skip_summary=False,
 ):
     """
     This function writes a list of collaborators to a markdown file in table format
@@ -33,7 +33,7 @@ def write_to_markdown(
     'contribution_count', 'new_contributor', and 'commits'.
 
     Args:
-        collaborators (list): A list of dictionaries, where each dictionary
+        collaborators (list): A tuple of objects, where each object
                               represents a collaborator. Each dictionary should
                               have the keys 'username', 'contribution_count',
                               and 'commits'.
@@ -51,12 +51,12 @@ def write_to_markdown(
         link_to_profile (str): True if the user wants the username linked to
                                Github profile in the report
         ghe (str): The GitHub Enterprise instance URL, if applicable.
+        show_avatar (str): True if the user wants to show profile images in
+                            the report
         sort_column (str): the column to sort the table with ('username',
                            'contribution_count' or 'new_contributor')
         sort_order (str): the order to sort the column with (`asc` or `desc`)
         skip_summary (str): True if the user wants the summary not to be printed
-        show_avatar (str): True if the user wants to show profile images in
-                            the report
 
     Returns:
         None
@@ -72,9 +72,9 @@ def write_to_markdown(
         sponsor_info,
         link_to_profile,
         ghe,
+        show_avatar,
         sort_column,
         sort_order,
-        show_avatar,
     )
 
     # Put together the summary table including # of new contributions,
@@ -222,9 +222,9 @@ def get_contributor_table(
     sponsor_info,
     link_to_profile,
     ghe,
-    sort_column,
-    sort_order,
     show_avatar=False,
+    sort_column="contribution_count",
+    sort_order="desc",
 ):
     """
     This function returns a string containing a markdown table of the contributors and the total contribution count.
@@ -238,10 +238,10 @@ def get_contributor_table(
         repository (str): The repository for which the contributors are being listed.
         sponsor_info (str): True if the user wants the sponsor_url shown in the report
         link_to_profile (str): True if the user wants the username linked to Github profile in the report
+        show_avatar (str): True if the user wants to show profile images in the report
         sort_column (str): the column to sort the table with ('username',
                            'contribution_count' or 'new_contributor')
         sort_order (str): the order to sort the column with (`asc` or `desc`)
-        show_avatar (str): True if the user wants to show profile images in the report
 
     Returns:
         table (str): A string containing a markdown table of the contributors and the total contribution count.

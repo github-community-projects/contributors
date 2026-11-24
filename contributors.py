@@ -88,10 +88,10 @@ def main():
         sponsor_info,
         link_to_profile,
         ghe,
-        show_avatar,
-        sort_column,
-        sort_order,
-        skip_summary,
+        show_avatar=show_avatar,
+        sort_column=sort_column,
+        sort_order=sort_order,
+        skip_summary=skip_summary,
     )
     json_writer.write_to_json(
         filename="contributors.json",
