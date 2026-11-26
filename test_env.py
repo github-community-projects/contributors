@@ -1,3 +1,4 @@
+# pylint: disable=too-many-public-methods
 """This is the test module for the env module."""
 
 import os
