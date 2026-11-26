@@ -1,7 +1,7 @@
 """This module contains a function that writes data to a JSON file."""
 
 import json
-import re
+from sort import sort_contributions
 
 
 def write_to_json(
@@ -71,11 +71,8 @@ def write_to_json(
     #     ]
     # }
 
-    # Sort the list by chosen column and order, case insensitive order, natural sort (adapted from Mark Byers' snippet published under CC-BY-SA license at https://stackoverflow.com/questions/4836710/is-there-a-built-in-function-for-string-natural-sort/4836734#4836734)
-    is_reverse = sort_order == "desc" #default to desc
-    convert = lambda text: int(text) if text.isdigit() else text.casefold()
-    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', str(key))]
-    contributors = sorted(contributors, key=lambda x: alphanum_key(getattr(x, sort_column)), reverse=is_reverse)
+    # case insentive and natural sorting of the list by chosen column and order
+    contributors = sort_contributions(contributors, sort_column, sort_order)
 
     data = {
         "start_date": start_date,

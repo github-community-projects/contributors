@@ -2,7 +2,7 @@
 """This module contains the functions needed to write the output to markdown files."""
 
 import os
-import re
+from sort import sort_contributions
 
 
 def _is_truthy(value) -> bool:
@@ -272,13 +272,8 @@ def get_contributor_table(
     table = headers
     total_contributions = 0
 
-    # Sort the list by chosen column and order, case insensitive order, natural sort (adapted from Mark Byers' snippet published under CC-BY-SA license at https://stackoverflow.com/questions/4836710/is-there-a-built-in-function-for-string-natural-sort/4836734#4836734)
-    is_reverse = sort_order == "desc" #default to desc
-    convert = lambda text: int(text) if text.isdigit() else text.casefold()
-    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', str(key))]
-    sorted_collaborators = sorted(
-        collaborators, key=lambda x: alphanum_key(getattr(x, sort_column)), reverse=is_reverse
-    )
+    # case insentive and natural sorting of the list by chosen column and order
+    sorted_collaborators = sort_contributions(collaborators, sort_column, sort_order)
 
     for collaborator in sorted_collaborators:
         total_contributions += collaborator.contribution_count
