@@ -8,13 +8,13 @@ def sort_contributions(collaborators, sort_column, sort_order):
     This function returns a case-insensitive sorted list by chosen column and order, using natural sorting.
 
     Args:
-        collaborators (list): A list of dictionaries, where each dictionary represents a collaborator.
-                              Each dictionary should have the keys 'username', 'contribution_count', and 'commits'.
+        collaborators (list): A list of objects, where each object represents a collaborator.
+                              Each object should have the attributes 'username', 'contribution_count', and 'commits'.
         sort_column (str): The start date of the date range for the contributor list.
         sort_order (str): The end date of the date range for the contributor list.
 
     Returns:
-        sorted_collaborators (list): A list of dictionaries of the same format as the one received as argument.
+        sorted_collaborators (list): A list of objects of the same format as the one received as argument.
 
     """
     is_reverse = False if sort_order == "asc" else True #defaults to descending order if invalid
