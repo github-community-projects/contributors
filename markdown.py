@@ -2,6 +2,7 @@
 """This module contains the functions needed to write the output to markdown files."""
 
 import os
+
 from sort import sort_contributions
 
 

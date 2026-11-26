@@ -17,12 +17,16 @@ def sort_contributions(collaborators, sort_column, sort_order):
         sorted_collaborators (list): A list of objects of the same format as the one received as argument.
 
     """
-    is_reverse = False if sort_order == "asc" else True #defaults to descending order if invalid
+    is_reverse = not sort_order == "asc"  # defaults to descending order if invalid
 
     def assign_type(split_text):
         return int(split_text) if split_text.isdigit() else split_text.casefold()
 
     def split_and_type_alphanumerical_components(input_entry):
-        return [assign_type(c) for c in re.split('([0-9]+)', str(input_entry))]
+        return [assign_type(c) for c in re.split("([0-9]+)", str(input_entry))]
 
-    return sorted(collaborators, key=lambda x: split_and_type_alphanumerical_components(getattr(x, sort_column)), reverse=is_reverse)
+    return sorted(
+        collaborators,
+        key=lambda x: split_and_type_alphanumerical_components(getattr(x, sort_column)),
+        reverse=is_reverse,
+    )

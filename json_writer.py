@@ -1,6 +1,7 @@
 """This module contains a function that writes data to a JSON file."""
 
 import json
+
 from sort import sort_contributions
 
 
