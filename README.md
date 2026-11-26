@@ -107,10 +107,12 @@ This action can be configured to authenticate with GitHub App Installation or Pe
 | `OUTPUT_FILENAME`   | False                                           | contributors.md    | The output filename for the markdown report. ie. OUTPUT_FILENAME = "my-report.md"                                                                                                                                                 |
 | `SHOW_AVATAR`       | False                                           | False              | If you want to show profile images in the markdown output. ie. SHOW_AVATAR = "True" or SHOW_AVATAR = "False"                                                                                                                      |
 | `SORT_COLUMN`       | False                                           | contribution_count | The column you want to sort the table with. Possible values: `username` (column of strings), `contribution_count` (column of integers) or `new_contributor` (column of booleans, whether the given username is a new contributor) |
-| `SORT_ORDER`        | False                                           | desc               | The order the SORT_COLUMN column will be sorted. Possibles values: "asc" for ascending order or "desc" for descending order.                                                                                                      |
+| `SORT_ORDER`        | False                                           | desc               | The order the SORT_COLUMN column will be sorted. Possibles values: `asc` for ascending order or `desc` for descending order.                                                                                                      |
 | `SKIP_SUMMARY`      | False                                           | False              | If you want to hide the summary with total contributions statistics above the contributors table. ie. SKIP_SUMMARY = "True" or SKIP_SUMMARY = "False"                                                                             |
 
-**Note**: If `start_date` and `end_date` are specified then the action will determine if the contributor is new. A new contributor is one that has contributed in the date range specified but not before the start date.
+**Notes**:
+- If `start_date` and `end_date` are specified then the action will determine if the contributor is new. A new contributor is one that has contributed in the date range specified but not before the start date.
+- When defining variables with invalid values, it will result in an error. With the exception of `sort_column` and `sort_order` for which the action will run using the default values.
 
 **Performance Note:** Using start and end dates will reduce speed of the action by approximately 63X. ie without dates if the action takes 1.7 seconds, it will take 1 minute and 47 seconds.
 
