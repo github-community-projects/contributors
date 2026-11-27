@@ -7,7 +7,6 @@ import datetime
 import os
 import re
 from os.path import dirname, join
-from typing import List
 
 from dotenv import load_dotenv
 
@@ -65,7 +64,7 @@ def validate_date_format(env_var_name: str) -> str:
     pattern = "%Y-%m-%d"
     try:
         datetime.datetime.strptime(date_to_validate, pattern).replace(
-            tzinfo=datetime.timezone.utc
+            tzinfo=datetime.UTC
         )
     except ValueError as exc:
         raise ValueError(
@@ -93,12 +92,12 @@ def validate_date_range(start_date: str, end_date: str) -> None:
     try:
         start = (
             datetime.datetime.strptime(start_date, pattern)
-            .replace(tzinfo=datetime.timezone.utc)
+            .replace(tzinfo=datetime.UTC)
             .date()
         )
         end = (
             datetime.datetime.strptime(end_date, pattern)
-            .replace(tzinfo=datetime.timezone.utc)
+            .replace(tzinfo=datetime.UTC)
             .date()
         )
     except ValueError as exc:
@@ -134,7 +133,7 @@ def validate_output_filename(output_filename: str) -> str:
 
 
 def validate_allowed_values(
-    env_var_name: str, allowed_values: List[str], default: str
+    env_var_name: str, allowed_values: list[str], default: str
 ) -> str:
     """Check that env variable is contained in a list of defined values or set a default one.
     Returns a lowercase value.

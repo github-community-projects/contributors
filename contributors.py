@@ -1,7 +1,7 @@
 # pylint: disable=broad-exception-caught
 """This file contains the main() and other functions needed to get contributor information from the organization or repository"""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import auth
 import contributor_stats
@@ -173,8 +173,8 @@ def get_contributors(repo: object, start_date: str, end_date: str, ghe: str):
             avatars: dict[str, str] = {}
             counts: dict[str, int] = {}
             for commit in repo.get_commits(
-                since=datetime.fromisoformat(start_date).replace(tzinfo=timezone.utc),
-                until=datetime.fromisoformat(end_date).replace(tzinfo=timezone.utc),
+                since=datetime.fromisoformat(start_date).replace(tzinfo=UTC),
+                until=datetime.fromisoformat(end_date).replace(tzinfo=UTC),
             ):
                 login = getattr(commit.author, "login", None)
                 if not login or "[bot]" in login:

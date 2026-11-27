@@ -2,7 +2,7 @@
 
 import runpy
 import unittest
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import MagicMock, patch
 
 import contributors as contributors_module
@@ -34,8 +34,8 @@ class TestContributors(unittest.TestCase):
 
         self.assertEqual(len(result), 1)
         mock_repo.get_commits.assert_called_once_with(
-            since=datetime(2022, 1, 1, tzinfo=timezone.utc),
-            until=datetime(2022, 12, 31, tzinfo=timezone.utc),
+            since=datetime(2022, 1, 1, tzinfo=UTC),
+            until=datetime(2022, 12, 31, tzinfo=UTC),
         )
         mock_contributor_stats.assert_called_once_with(
             "user",
@@ -145,8 +145,8 @@ class TestContributors(unittest.TestCase):
 
         self.assertEqual(len(result), 1)
         mock_repo.get_commits.assert_called_once_with(
-            since=datetime(2022, 1, 1, tzinfo=timezone.utc),
-            until=datetime(2022, 12, 31, tzinfo=timezone.utc),
+            since=datetime(2022, 1, 1, tzinfo=UTC),
+            until=datetime(2022, 12, 31, tzinfo=UTC),
         )
         mock_contributor_stats.assert_called_once_with(
             "user",

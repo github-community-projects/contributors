@@ -17,7 +17,7 @@ def sort_contributions(collaborators, sort_column, sort_order):
         sorted_collaborators (list): A list of objects of the same format as the one received as argument.
 
     """
-    is_reverse = not sort_order == "asc"  # defaults to descending order if invalid
+    is_reverse = sort_order != "asc"  # defaults to descending order if invalid
 
     def assign_type(split_text):
         return int(split_text) if split_text.isdigit() else split_text.casefold()
