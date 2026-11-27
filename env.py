@@ -64,7 +64,7 @@ def validate_date_format(env_var_name: str) -> str:
     pattern = "%Y-%m-%d"
     try:
         datetime.datetime.strptime(date_to_validate, pattern).replace(
-            tzinfo=datetime.timezone.utc
+            tzinfo=datetime.UTC
         )
     except ValueError as exc:
         raise ValueError(
@@ -92,12 +92,12 @@ def validate_date_range(start_date: str, end_date: str) -> None:
     try:
         start = (
             datetime.datetime.strptime(start_date, pattern)
-            .replace(tzinfo=datetime.timezone.utc)
+            .replace(tzinfo=datetime.UTC)
             .date()
         )
         end = (
             datetime.datetime.strptime(end_date, pattern)
-            .replace(tzinfo=datetime.timezone.utc)
+            .replace(tzinfo=datetime.UTC)
             .date()
         )
     except ValueError as exc:
@@ -132,6 +132,19 @@ def validate_output_filename(output_filename: str) -> str:
     return filename
 
 
+def validate_allowed_values(
+    env_var_name: str, allowed_values: list[str], default: str
+) -> str:
+    """Check that env variable is contained in a list of defined values or set a default one.
+    Returns a lowercase value.
+    """
+    allowed_values = [val.strip().lower() for val in allowed_values]
+    var_to_validate = os.getenv(env_var_name, default).strip().lower()
+    if var_to_validate in allowed_values:
+        return var_to_validate
+    return default.strip().lower()
+
+
 def get_env_vars(
     test: bool = False,
 ) -> tuple[
@@ -147,6 +160,9 @@ def get_env_vars(
     str,
     bool,
     bool,
+    str,
+    bool,
+    str,
     str,
     bool,
 ]:
@@ -169,6 +185,9 @@ def get_env_vars(
         end_date (str): The end date to get contributor information to
         sponsor_info (str): Whether to get sponsor information on the contributor
         link_to_profile (str): Whether to link username to Github profile in markdown output
+        sort_column (str): The column the table should be sorted by ('username', 'contribution_count' or 'new_contributor'). Case insensitive.
+        sort_order (str): The sorting order ('asc' or 'desc'). Case insensitive.
+        skip_summary (str): Whether to print the summary before the table
     """
 
     if not test:
@@ -222,6 +241,14 @@ def get_env_vars(
             repository.strip() for repository in repositories_str.split(",")
         ]
 
+    sort_column = validate_allowed_values(
+        "SORT_COLUMN",
+        ["username", "contribution_count", "new_contributor"],
+        "contribution_count",
+    )
+    sort_order = validate_allowed_values("SORT_ORDER", ["asc", "desc"], "desc")
+    skip_summary = get_bool_env_var("SKIP_SUMMARY", False)
+
     return (
         organization,
         repositories_list,
@@ -237,4 +264,7 @@ def get_env_vars(
         link_to_profile,
         output_filename,
         show_avatar,
+        sort_column,
+        sort_order,
+        skip_summary,
     )

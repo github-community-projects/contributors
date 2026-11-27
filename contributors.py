@@ -1,7 +1,7 @@
 # pylint: disable=broad-exception-caught
 """This file contains the main() and other functions needed to get contributor information from the organization or repository"""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import auth
 import contributor_stats
@@ -29,6 +29,9 @@ def main():
         link_to_profile,
         output_filename,
         show_avatar,
+        sort_column,
+        sort_order,
+        skip_summary,
     ) = env.get_env_vars()
 
     # Auth to GitHub.com
@@ -85,7 +88,10 @@ def main():
         sponsor_info,
         link_to_profile,
         ghe,
-        show_avatar,
+        show_avatar=show_avatar,
+        sort_column=sort_column,
+        sort_order=sort_order,
+        skip_summary=skip_summary,
     )
     json_writer.write_to_json(
         filename="contributors.json",
@@ -96,6 +102,8 @@ def main():
         sponsor_info=sponsor_info,
         link_to_profile=link_to_profile,
         contributors=contributors,
+        sort_column=sort_column,
+        sort_order=sort_order,
     )
 
 
@@ -165,8 +173,8 @@ def get_contributors(repo: object, start_date: str, end_date: str, ghe: str):
             avatars: dict[str, str] = {}
             counts: dict[str, int] = {}
             for commit in repo.get_commits(
-                since=datetime.fromisoformat(start_date).replace(tzinfo=timezone.utc),
-                until=datetime.fromisoformat(end_date).replace(tzinfo=timezone.utc),
+                since=datetime.fromisoformat(start_date).replace(tzinfo=UTC),
+                until=datetime.fromisoformat(end_date).replace(tzinfo=UTC),
             ):
                 login = getattr(commit.author, "login", None)
                 if not login or "[bot]" in login:

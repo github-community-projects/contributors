@@ -1,3 +1,4 @@
+# pylint: disable=too-many-public-methods
 """This is the test module for the env module."""
 
 import os
@@ -27,6 +28,9 @@ class TestEnv(unittest.TestCase):
             "REPOSITORY",
             "START_DATE",
             "SHOW_AVATAR",
+            "SORT_COLUMN",
+            "SORT_ORDER",
+            "SKIP_SUMMARY",
         ]
         for key in env_keys:
             if key in os.environ:
@@ -47,6 +51,9 @@ class TestEnv(unittest.TestCase):
             "SPONSOR_INFO": "False",
             "LINK_TO_PROFILE": "True",
             "SHOW_AVATAR": "False",
+            "SORT_COLUMN": "username",
+            "SORT_ORDER": "asc",
+            "SKIP_SUMMARY": "True",
         },
         clear=True,
     )
@@ -70,6 +77,9 @@ class TestEnv(unittest.TestCase):
             link_to_profile,
             _output_filename,
             _show_avatar,
+            sort_column,
+            sort_order,
+            skip_summary,
         ) = env.get_env_vars()
 
         self.assertEqual(organization, "org")
@@ -84,6 +94,9 @@ class TestEnv(unittest.TestCase):
         self.assertEqual(end_date, "2022-12-31")
         self.assertFalse(sponsor_info)
         self.assertTrue(link_to_profile)
+        self.assertEqual(sort_column, "username")
+        self.assertEqual(sort_order, "asc")
+        self.assertTrue(skip_summary)
 
     @patch.dict(
         os.environ,
@@ -100,6 +113,9 @@ class TestEnv(unittest.TestCase):
             "SPONSOR_INFO": "False",
             "LINK_TO_PROFILE": "True",
             "SHOW_AVATAR": "False",
+            "SORT_COLUMN": "username",
+            "SORT_ORDER": "asc",
+            "SKIP_SUMMARY": "True",
         },
         clear=True,
     )
@@ -129,6 +145,9 @@ class TestEnv(unittest.TestCase):
             "SPONSOR_INFO": "False",
             "LINK_TO_PROFILE": "True",
             "SHOW_AVATAR": "False",
+            "SORT_COLUMN": "username",
+            "SORT_ORDER": "asc",
+            "SKIP_SUMMARY": "True",
         },
         clear=True,
     )
@@ -161,6 +180,9 @@ class TestEnv(unittest.TestCase):
             "SPONSOR_INFO": "False",
             "LINK_TO_PROFILE": "True",
             "SHOW_AVATAR": "False",
+            "SORT_COLUMN": "username",
+            "SORT_ORDER": "asc",
+            "SKIP_SUMMARY": "True",
         },
         clear=True,
     )
@@ -185,6 +207,9 @@ class TestEnv(unittest.TestCase):
             link_to_profile,
             _output_filename,
             _show_avatar,
+            sort_column,
+            sort_order,
+            skip_summary,
         ) = env.get_env_vars()
 
         self.assertEqual(organization, "org")
@@ -199,6 +224,9 @@ class TestEnv(unittest.TestCase):
         self.assertEqual(end_date, "")
         self.assertFalse(sponsor_info)
         self.assertTrue(link_to_profile)
+        self.assertEqual(sort_column, "username")
+        self.assertEqual(sort_order, "asc")
+        self.assertTrue(skip_summary)
 
     @patch.dict(
         os.environ,
@@ -215,6 +243,9 @@ class TestEnv(unittest.TestCase):
             "SPONSOR_INFO": "False",
             "LINK_TO_PROFILE": "True",
             "OUTPUT_FILENAME": "custom-report.md",
+            "SORT_COLUMN": "username",
+            "SORT_ORDER": "asc",
+            "SKIP_SUMMARY": "True",
         },
         clear=True,
     )
@@ -235,6 +266,9 @@ class TestEnv(unittest.TestCase):
             _link_to_profile,
             output_filename,
             _show_avatar,
+            _sort_column,
+            _sort_order,
+            _skip_summary,
         ) = env.get_env_vars()
 
         self.assertEqual(output_filename, "custom-report.md")
@@ -321,6 +355,9 @@ class TestEnv(unittest.TestCase):
             _link_to_profile,
             output_filename,
             _show_avatar,
+            _sort_column,
+            _sort_order,
+            _skip_summary,
         ) = env.get_env_vars()
 
         self.assertEqual(output_filename, "contributors.md")
@@ -351,6 +388,9 @@ class TestEnv(unittest.TestCase):
             _link_to_profile,
             output_filename,
             _show_avatar,
+            _sort_column,
+            _sort_order,
+            _skip_summary,
         ) = env.get_env_vars()
 
         self.assertEqual(output_filename, "contributors.md")
@@ -471,6 +511,9 @@ class TestEnv(unittest.TestCase):
             _link_to_profile,
             _output_filename,
             _show_avatar,
+            _sort_column,
+            _sort_order,
+            _skip_summary,
         ) = env.get_env_vars()
         self.assertEqual(start_date, "2024-01-01")
         self.assertEqual(end_date, "2025-01-01")
@@ -489,6 +532,48 @@ class TestEnv(unittest.TestCase):
             str(the_exception),
             "start_date and end_date must be in the format YYYY-MM-DD",
         )
+
+    @patch.dict(
+        os.environ,
+        {
+            "ORGANIZATION": "org",
+            "REPOSITORY": "repo,repo2",
+            "GH_TOKEN": "token",
+            "SORT_COLUMN": "Whatever",
+            "SORT_ORDER": "ASc",
+        },
+        clear=True,
+    )
+    def test_get_env_vars_with_absent_or_invalid_sort_and_skip_summary_params(self):
+        """
+        Test the get_env_vars function checking that default sorting and skip_summary params
+        are correctly applied in case of invalid (sort_column) or absent (skip_summary) definition, and that lowercase
+        conversion is applied (sort_order)
+        """
+
+        (
+            _organization,
+            _repository_list,
+            _gh_app_id,
+            _gh_app_installation_id,
+            _gh_app_private_key,
+            _gh_app_enterprise_only,
+            _token,
+            _ghe,
+            _start_date,
+            _end_date,
+            _sponsor_info,
+            _link_to_profile,
+            _output_filename,
+            _show_avatar,
+            sort_column,
+            sort_order,
+            skip_summary,
+        ) = env.get_env_vars()
+
+        self.assertEqual(sort_column, "contribution_count")
+        self.assertEqual(sort_order, "asc")
+        self.assertFalse(skip_summary)
 
 
 if __name__ == "__main__":
