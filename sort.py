@@ -10,8 +10,8 @@ def sort_contributions(collaborators, sort_column, sort_order):
     Args:
         collaborators (list): A list of objects, where each object represents a collaborator.
                               Each object should have the attributes 'username', 'contribution_count', and 'commits'.
-        sort_column (str): The start date of the date range for the contributor list.
-        sort_order (str): The end date of the date range for the contributor list.
+        sort_column (str): The name of the column to sort ('username', 'contribution_count' or 'new_contributor').
+        sort_order (str): The order to sort the column with ('asc' or 'desc').
 
     Returns:
         sorted_collaborators (list): A list of objects of the same format as the one received as argument.

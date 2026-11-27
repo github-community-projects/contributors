@@ -111,8 +111,9 @@ This action can be configured to authenticate with GitHub App Installation or Pe
 | `SKIP_SUMMARY`      | False                                           | False              | If you want to hide the summary with total contributions statistics above the contributors table. ie. SKIP_SUMMARY = "True" or SKIP_SUMMARY = "False"                                                                             |
 
 **Notes**:
+
 - If `start_date` and `end_date` are specified then the action will determine if the contributor is new. A new contributor is one that has contributed in the date range specified but not before the start date.
-- When defining variables with invalid values, it will result in an error. With the exception of `sort_column` and `sort_order` for which the action will run using the default values.
+- If `sort_column` and `sort_order` are defined with invalid values, the action will run using the default values as fallback.
 
 **Performance Note:** Using start and end dates will reduce speed of the action by approximately 63X. ie without dates if the action takes 1.7 seconds, it will take 1 minute and 47 seconds.
 

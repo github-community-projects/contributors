@@ -273,7 +273,7 @@ def get_contributor_table(
     table = headers
     total_contributions = 0
 
-    # case insentive and natural sorting of the list by chosen column and order
+    # Case insensitive and natural sorting of the list by chosen column and order
     sorted_collaborators = sort_contributions(collaborators, sort_column, sort_order)
 
     for collaborator in sorted_collaborators:

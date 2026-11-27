@@ -72,7 +72,7 @@ def write_to_json(
     #     ]
     # }
 
-    # case insentive and natural sorting of the list by chosen column and order
+    # Case insensitive and natural sorting of the list by chosen column and order
     contributors = sort_contributions(contributors, sort_column, sort_order)
 
     data = {
